@@ -87,6 +87,7 @@ static int addtime = 0;
 static long long addexpire = 0;
 static int addheaders = 0;
 
+static int detectdomain = 0;
 static char **domain = NULL;
 static size_t ndomains = 0;
 static char *selector = NULL;
@@ -124,7 +125,7 @@ main(int argc, char *argv[])
 	FILE *keyfile;
 	const char *errstr;
 
-	while ((ch = getopt(argc, argv, "a:c:d:h:k:s:tx:z")) != -1) {
+	while ((ch = getopt(argc, argv, "a:c:d:Dh:k:s:tx:z")) != -1) {
 		switch (ch) {
 		case 'a':
 			if (strncmp(optarg, "rsa-", 4) == 0) {
@@ -170,6 +171,9 @@ main(int argc, char *argv[])
 				osmtpd_err(1, "malloc");
 			domain[ndomains++] = optarg;
 			break;
+    case 'D':
+      detectdomain = 1;
+      break;
 		case 'h':
 			dkim_headers_set(optarg);
 			break;
@@ -211,6 +215,9 @@ main(int argc, char *argv[])
 
 	if (domain == NULL || selector == NULL || pkey == NULL)
 		usage();
+
+  if (detectdomain && ndomains != 1)
+    osmtpd_errx(1, "Single fallback domain expected");
 
 	if (EVP_PKEY_id(pkey) != keyid)
 		osmtpd_errx(1, "Key is not of type %s", cryptalg);
@@ -887,12 +894,14 @@ dkim_domain_select(struct dkim_message *message, char *from)
 	size_t i;
 
 	if ((mdomain = mdomain0 = osmtpd_mheader_from_domain(from)) == NULL) {
-		if (errno != EINVAL) {
+		if (errno != EINVAL)
 			dkim_errx(message, "Couldn't parse from header");
-			return NULL;
-		}
+
 		return NULL;
 	}
+
+  if (detectdomain)
+    return mdomain;
 
 	while (mdomain != NULL && mdomain[0] != '\0') {
 		for (i = 0; i < ndomains; i++) {
@@ -928,7 +937,7 @@ dkim_signature_need(struct dkim_message *message, size_t len)
 __dead void
 usage(void)
 {
-	fprintf(stderr, "usage: filter-dkimsign [-tz] [-a signalg] "
+	fprintf(stderr, "usage: filter-dkimsign [-tzD] [-a signalg] "
 	    "[-c canonicalization] \n    [-h headerfields]"
 	    "[-x seconds] -d domain -k keyfile -s selector\n");
 	exit(1);
