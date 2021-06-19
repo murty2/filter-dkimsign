@@ -1,0 +1,117 @@
+.\"	$OpenBSD$
+.\"
+.\" Copyright (c) 2019 Martijn van Duren <martijn@openbsd.org>
+.\"
+.\" Permission to use, copy, modify, and distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd $Mdocdate$
+.Dt FILTER-DKIMSIGN 8
+.Os
+.Sh NAME
+.Nm filter-dkimsign
+.Nd add dkim signature to messages
+.Sh SYNOPSIS
+.Nm
+.Op Fl tz
+.Op Fl a Ar algorithm
+.Op Fl c Ar canonicalization
+.Op Fl h Ar headers
+.Op Fl x Ar seconds
+.Fl d Ar domain
+.Fl k Ar file
+.Fl s Ar selector
+.Sh DESCRIPTION
+.Nm
+adds a dkim signature to the message.
+The following flags are supported:
+.Bl -tag -width Ds
+.It Fl a Ar algorithm
+The
+.Ar algorithm
+to use.
+Supported signing algorithms are
+.Em rsa
+and
+.Em ed25519 Pq when enabled at compile time .
+Only sha256 should be used for hashing, since other algorithms are most likely
+not supported by verifiers.
+Defaults to
+.Cm rsa-sha256 .
+.It Fl c Ar canonicalization
+The canonicalization algorithm used to sign the message.
+Defaults to
+.Em simple/simple .
+.It Fl d Ar domain
+The
+.Ar domain
+where the public key can be found.
+This option can be specified multiple times to select the best
+.Ar domain
+during signing.
+If specified multiple times it looks at the domain component of the first
+mailbox in the from-header and tries to find a match.
+If no exact match can be found it looks for the closest parent
+.Ar domain .
+If no matches can be the first
+.Ar domain
+specified will be used.
+.It Fl h Ar headers
+The email headers which are included in the mail signature.
+Per RFC this option requires at least the from header to be included.
+The headers are specified by separating them with a colon.
+The default is
+.Em from:reply-to:subject:date:to:cc:resent-date:resent-from:resent-to:resent-cc:in-reply-to:references:list-id:list-help:list-unsubscribe:list-subscribe:list-post:list-owner:list-archive .
+.It Fl k Ar file
+.Ar file
+should point to a file containing the RSA private key to sign the messages.
+.It Fl s Ar selector
+The selector within the _domainkey subdomain of
+.Ar domain
+where the public key can be found.
+.It Fl t
+Add the time of signing to the dkim header.
+.It Fl x Ar seconds
+Add the amount of
+.Ar seconds
+the signature is valid to the dkim header.
+.It Fl z
+Add the mail headers used in the dkim signature to the dkim header.
+If a second
+.Fl z
+is specified all headers will be included in the dkim header.
+Useful for debugging purposes.
+.El
+.Sh SEE ALSO
+.Xr smtpd 8
+.Sh STANDARDS
+.Rs
+.%A D. Crocker, Ed.
+.%Q Brandenburg InternetWorking
+.%A T. Hansen, Ed.
+.%Q AT&T Laboratories
+.%A M. Kucherawy, Ed.
+.%Q Cloudmark
+.%D September 2011
+.%R RFC 6376
+.%T DomainKeys Identified Mail (DKIM) Signatures
+.Re
+.Pp
+.Rs
+.%A J. Levine
+.%Q Taughannock Networks
+.%D September 2018
+.%R RFC 8463
+.%T A New Cryptographic Signature Method for DomainKeys Identified Mail
+.Re
+.Sh AUTHORS
+.An Martijn van Duren Aq Mt martijn@openbsd.org
