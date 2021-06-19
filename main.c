@@ -171,9 +171,9 @@ main(int argc, char *argv[])
 				osmtpd_err(1, "malloc");
 			domain[ndomains++] = optarg;
 			break;
-    case 'D':
-      detectdomain = 1;
-      break;
+		case 'D':
+			detectdomain = 1;
+			break;
 		case 'h':
 			dkim_headers_set(optarg);
 			break;
@@ -217,7 +217,7 @@ main(int argc, char *argv[])
 		usage();
 
   if (detectdomain && ndomains != 1)
-    osmtpd_errx(1, "Single fallback domain expected");
+		osmtpd_errx(1, "Single fallback domain expected");
 
 	if (EVP_PKEY_id(pkey) != keyid)
 		osmtpd_errx(1, "Key is not of type %s", cryptalg);
@@ -900,8 +900,8 @@ dkim_domain_select(struct dkim_message *message, char *from)
 		return NULL;
 	}
 
-  if (detectdomain)
-    return mdomain;
+	if (detectdomain)
+		return mdomain;
 
 	while (mdomain != NULL && mdomain[0] != '\0') {
 		for (i = 0; i < ndomains; i++) {
