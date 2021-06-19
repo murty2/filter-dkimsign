@@ -22,7 +22,7 @@
 .Nd add dkim signature to messages
 .Sh SYNOPSIS
 .Nm
-.Op Fl tz
+.Op Fl tzD
 .Op Fl a Ar algorithm
 .Op Fl c Ar canonicalization
 .Op Fl h Ar headers
@@ -62,7 +62,7 @@ If specified multiple times it looks at the domain component of the first
 mailbox in the from-header and tries to find a match.
 If no exact match can be found it looks for the closest parent
 .Ar domain .
-If no matches can be the first
+If no matches can be found, the first
 .Ar domain
 specified will be used.
 .It Fl h Ar headers
@@ -90,6 +90,10 @@ If a second
 .Fl z
 is specified all headers will be included in the dkim header.
 Useful for debugging purposes.
+.It Fl D
+Use domain from From: header. With this option, a single domain must be
+specified with -d for fallback, if we cannot get domain from header.
+.Cm CAUTION : Make sure the domain from From: header has DKIM entry in DNS
 .El
 .Sh SEE ALSO
 .Xr smtpd 8

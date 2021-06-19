@@ -1,8 +1,8 @@
-LOCALBASE?=	/usr/
+LOCALBASE?=	/usr
 
 PROG=		filter-dkimsign
 MAN=		filter-dkimsign.8
-BINDIR=		${LOCALBASE}/libexec/opensmtpd/
+BINDIR=		${LOCALBASE}/libexec/opensmtpd
 MANDIR=		${LOCALBASE}/share/man/man8
 
 SRCS+=		main.c mheader.c
@@ -32,7 +32,7 @@ CFLAGS+=	-Wsign-compare
 CFLAGS+=	${CRYPT_CFLAGS}
 CFLAGS+=	-I${CURDIR} -I${CURDIR}/openbsd-compat/
 
-LDFLAGS+=	-L${LOCALBASE}/lib
+LDFLAGS+=	-L${LOCALBASE}/lib64
 LDFLAGS+=	${CRYPT_LDFLAGS}
 LDADD+=		${CRYPT_LDADD} -lopensmtpd
 
@@ -103,6 +103,7 @@ CLEANFILES+=	${OBJS}
 
 ${PROG}: ${OBJS}
 	${CC} ${LDFLAGS} -o $@ ${OBJS} ${LDADD}
+	strip $@
 
 .DEFAULT_GOAL=		all
 .PHONY: all
