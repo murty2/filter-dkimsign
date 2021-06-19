@@ -21,4 +21,4 @@ Here, domain determined from From: header will be used in DKIM signing. If domai
 
 The benefit of using -D option is that you do not have to specify -d option 100 times, assuming you have 100 domains.
 
-**CAUTION: If use -D option, first make sure that domain (used in From: header) has DKIM configured for it in DNS properly. Otherwise mail can bounce (unless your domain has proper DMARC configuration and your SPF alignment succeeds)**
+**CAUTION: If you use -D option, first make sure that domain (used in From: header) has DKIM configured for it in DNS properly. Otherwise mail can bounce (unless your domain has proper DMARC configuration and your SPF alignment succeeds)**
