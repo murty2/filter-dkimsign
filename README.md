@@ -1,3 +1,5 @@
+Based on Revision 74 of original filter-dkimsign at http://imperialat.at/dev/filter-dkimsign/
+
 INSTALLING on Fedora
 --------------------
 
